@@ -1,0 +1,10 @@
+{
+    "python.pythonPath": "C:\\Users\\ReneG\\AppData\\Local\\Programs\\Python\\Python39\\python.exe",
+    "python.linting.pylintEnabled": false,
+    "python.languageServer": "Pylance",
+    "python.linting.enabled": true,
+    "python.linting.pylintArgs": ["--init-hook",
+        "import sys; sys.path.append('${workspaceRoot}')",
+        "--disable=C0114,C0115,C0116"],
+
+}

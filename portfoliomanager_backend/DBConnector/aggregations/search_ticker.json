@@ -1,0 +1,32 @@
+[
+  {
+    "$project": {
+      "ticker": "$ticker",
+      "ticker1": { "$arrayElemAt": [{ "$split": ["$ticker", "."] }, 0] },
+      "name": "$data.General.Name",
+      "exchange": "$data.General.Exchange",
+      "isin": "$data.General.ISIN"
+    }
+  },
+  {
+    "$match": {
+      "$or": [
+        { "ticker1": { "$regex": "<1>", "$options": "i" } },
+        { "name": { "$regex": "<2>", "$options": "i" } },
+        { "exchange": { "$regex": "<3>", "$options": "i" } },
+        { "isin": { "$regex": "<4>", "$options": "i" } }
+      ]
+    }
+  },
+  {
+    "$project": {
+      "ticker": "$ticker",
+      "name": "$name",
+      "exchange": "$exchange",
+      "isin": "$isin"
+    }
+  },
+  {
+    "$unset": "_id"
+  }
+]

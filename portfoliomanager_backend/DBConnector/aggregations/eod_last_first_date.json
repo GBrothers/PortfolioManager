@@ -1,0 +1,6 @@
+[
+  { "$match": { "ticker": "<1>" } },
+  { "$unwind": { "path": "$data" } },
+  { "$sort": { "data.date": <2> } },
+  { "$limit": 1 }
+]

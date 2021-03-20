@@ -1,0 +1,8 @@
+[
+  {
+    "$match": { "ticker": "<1>" }
+  },
+  {
+    "$set": { "LogoURL": "$data.General.LogoURL" }
+  }
+]

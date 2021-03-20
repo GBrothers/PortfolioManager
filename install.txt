@@ -1,0 +1,41 @@
+// npm path should be in PATHS
+// usually %appdata%\npm
+
+// install vue cli globaly
+npm install -g @vue/cli
+
+// create new vue project (creates also the projet folder)
+vue create [projectname]
+
+// test vue creation
+npm run serve
+
+// create a jsconfig.json file in the project root with content:
+{
+  "include": ["./src/**/*"]
+}
+
+// in VSCode install extensions
+https://marketplace.visualstudio.com/items?itemName=octref.vetur
+https://marketplace.visualstudio.com/items?itemName=sdras.vue-vscode-snippets
+https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint
+https://marketplace.visualstudio.com/items?itemName=vuetifyjs.vuetify-vscode
+
+
+// install vuetify CLI
+vue add vuetify
+
+// starten der vue ui
+vue ui
+
+// in der UI Vuetify installieren
+
+// in vuetify.js den zweiten import ändern zu:
+import Vuetify from "vuetify/lib/framework"; (importing from vuetify/lib/ would slow down the build proecess!)
+
+
+(Done!) Attention: In default App.vue there are allready <style> definitions like font-family. Remove the <style> to start greenfield
+
+Optional
+nice Icons in Explorer
+https://marketplace.visualstudio.com/items?itemName=PKief.material-icon-theme

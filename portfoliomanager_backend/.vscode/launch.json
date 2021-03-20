@@ -1,0 +1,67 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Modul: api",
+      "type": "python",
+      "request": "launch",
+      "module": "API.api",
+      "args": []
+    },
+    {
+      "name": "Python: Modul: fundamentals_connector",
+      "type": "python",
+      "request": "launch",
+      "module": "DataConnector.EODHistData.fundamentals_connector",
+      "args": ["gspc.indx", "iconst"]
+    },
+    {
+      "name": "Python: Modul: mongoconnector",
+      "type": "python",
+      "request": "launch",
+      "module": "DBConnector.mongoconnector",
+      "args": ["f.us", "eod"]
+    },
+    {
+      "name": "Python: Modul_ datetimehelper",
+      "type": "python",
+      "request": "launch",
+      "module": "Common.datetimehelper"
+    },
+    {
+      "name": "Python: Modul: playground",
+      "type": "python",
+      "request": "launch",
+      "module": "Playground.playground",
+      "args": []
+    },
+    {
+      "name": "Python: Modul: eodhd_connector",
+      "type": "python",
+      "request": "launch",
+      "module": "DataConnector.EODHistData.eod_connector",
+      "args": ["tdoc.us"]
+    },
+    {
+      "name": "Python: Modul: update_fundamentals",
+      "type": "python",
+      "request": "launch",
+      "module": "Orchestration.updatefundamentals",
+      "args": ["x", "X"]
+    },
+    {
+      "type": "pwa-chrome",
+      "request": "launch",
+      "name": "vuejs: chrome",
+      "url": "http://localhost:8080",
+      "webRoot": "C:/_Development_/PortfolioManager/portfoliomanager_frontend/src",
+      "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "webpack:///src/*": "C:/_Development_/PortfolioManager/portfoliomanager_frontend/src/*"
+      }
+    }
+  ]
+}

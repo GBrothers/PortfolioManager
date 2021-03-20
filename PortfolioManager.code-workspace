@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "portfoliomanager_backend"
+		},
+		{
+			"path": "portfoliomanager_frontend"
+		}
+	],
+	"settings": {
+		"python.languageServer": "Pylance"
+	}
+}
