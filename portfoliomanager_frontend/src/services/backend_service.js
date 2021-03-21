@@ -9,9 +9,6 @@ const apiClient = axios.create({
   },
 })
 
-// eslint-disable-next-line no-unused-vars
-var statusAPI = false
-
 export default {
   searchTicker(phrase, fields) {
     return apiClient.get("/search", {
@@ -26,5 +23,8 @@ export default {
   },
   checkDB() {
     return apiClient.get("/intern/checkdb")
+  },
+  eodReqLimit() {
+    return apiClient.get("/userdata?requests=1")
   },
 }

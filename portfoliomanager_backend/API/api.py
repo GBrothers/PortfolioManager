@@ -4,6 +4,7 @@ from flask_cors import CORS
 
 from Helper import logmngr
 from DBConnector import mongoconnector as mc
+from DataConnector.EODHistData import user_connector as uc
 
 log = logmngr.get_logger()
 app = Flask(__name__)
@@ -27,6 +28,17 @@ def is_mongodb_alive():
     return 'nok'
 
 
+@app.route('/userdata', methods=['GET'])
+def get_user_info():
+    response = uc.getUserData()
+    if request.args.get('requests'):
+        response = {
+            'dayrequests': response['apiRequests'],
+            'daylimit': response['dailyRateLimit']
+        }
+    return response
+
+
 @ app.route('/eod', methods=['GET'])
 def get_eod():
     ticker = request.args.get('ticker')
@@ -44,7 +56,7 @@ def get_fundamentals():
     result = mc.get_fundamentals(ticker)
     if result is None:
         log.warning("No Data found for ticker %s", ticker)
-        result = "No Data found for ticker %s", ticker
+        result = "No Data found for ticker " + ticker
     return result
 
 

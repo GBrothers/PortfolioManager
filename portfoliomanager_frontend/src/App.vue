@@ -11,11 +11,5 @@ export default {
   data: () => ({
     //
   }),
-};
-</script>
-
-<style>
-html {
-  overflow-y: auto;
 }
-</style>
+</script>

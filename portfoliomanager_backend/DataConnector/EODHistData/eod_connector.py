@@ -2,17 +2,11 @@ import sys
 from operator import itemgetter
 from datetime import date, datetime, timedelta
 import requests
-from Helper import configmngr as config, datetimehelper as dth
+from Helper import datetimehelper as dth
 from Helper import logmngr as log, internalfilewriter as ifw
 from DataConnector.EODHistData import common
 
-apitoken = config.get_config('eod historicaldata', 'api-token')
-baseurl_intraday = config.get_config(
-    'eod historicaldata', 'sub-url-intraday', True)
-baseurl_eod = config.get_config('eod historicaldata', 'sub-url-eod', True)
-
 log = log.get_logger()
-
 
 def _prepare_datetimes(start, end, astimestamps=True):
     start = dth.str2dateordatetime(start)
@@ -47,7 +41,7 @@ def get_intraday(ticker, start=(date.today() - timedelta(days=1)), end='+1', int
     start, end = _prepare_datetimes(start, end)
     log.info("request: %s - > %s - %s", ticker, dth.get_datetime_timestamp(
         start), dth.get_datetime_timestamp(end))
-    url = baseurl_intraday + ticker + '?' + 'api_token=' + apitoken + '&fmt=json&from=' + \
+    url = common.baseurl_intraday + ticker + '?' + 'api_token=' + common.apitoken + '&fmt=json&from=' + \
         str(start) + '&to=' + str(end) + '&interval=' + interval
     log.info(url)
     response = requests.get(url)
@@ -58,7 +52,7 @@ def get_intraday(ticker, start=(date.today() - timedelta(days=1)), end='+1', int
 def get_eod(ticker, start=(date.today() - timedelta(days=1)), end="+1", period="d"):
     start, end = _prepare_datetimes(start, end, False)
     log.info("request: %s - > %s - %s", ticker, start, end)
-    url = baseurl_eod + ticker + '?' + 'api_token=' + apitoken + '&fmt=json&from=' + \
+    url = common.baseurl_eod + ticker + '?' + 'api_token=' + common.apitoken + '&fmt=json&from=' + \
         str(start) + '&to=' + str(end) + '&period=' + period
     log.info(url)
     response = requests.get(url)
