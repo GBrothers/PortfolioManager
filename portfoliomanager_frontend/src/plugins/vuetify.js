@@ -8,9 +8,10 @@ Vue.use(Vuetify)
 
 export default new Vuetify({
   theme: {
+    dark: localStorage.isdark,
     themes: {
       light: {
-        primary: "#9c2740",
+        primary: "#f5e8ff",
         secondary: "#673ab7",
         accent: "#e91e63",
         error: "#f44336",
@@ -19,7 +20,7 @@ export default new Vuetify({
         success: "#4caf50",
       },
       dark: {
-        primary: "#9c27b0",
+        primary: "#303050",
         secondary: "#673ab7",
         accent: "#e91e63",
         error: "#f44336",

@@ -16,14 +16,20 @@
       "type": "python",
       "request": "launch",
       "module": "DataConnector.EODHistData.fundamentals_connector",
-      "args": ["gspc.indx", "iconst"]
+      "args": [
+        "gspc.indx",
+        "iconst"
+      ]
     },
     {
       "name": "Python: Modul: mongoconnector",
       "type": "python",
       "request": "launch",
       "module": "DBConnector.mongoconnector",
-      "args": ["f.us", "eod"]
+      "args": [
+        "f.us",
+        "eod"
+      ]
     },
     {
       "name": "Python: Modul_ datetimehelper",
@@ -43,14 +49,19 @@
       "type": "python",
       "request": "launch",
       "module": "DataConnector.EODHistData.eod_connector",
-      "args": ["tdoc.us"]
+      "args": [
+        "tdoc.us"
+      ]
     },
     {
       "name": "Python: Modul: update_fundamentals",
       "type": "python",
       "request": "launch",
       "module": "Orchestration.updatefundamentals",
-      "args": ["x", "X"]
+      "args": [
+        "x",
+        "X"
+      ]
     },
     {
       "type": "pwa-chrome",
@@ -60,7 +71,8 @@
       "webRoot": "C:/_Development_/PortfolioManager/portfoliomanager_frontend/src",
       "sourceMaps": true,
       "sourceMapPathOverrides": {
-        "webpack:///src/*": "C:/_Development_/PortfolioManager/portfoliomanager_frontend/src/*"
+        "webpack:///src/*.vue": "${webRoot}/*.vue",
+        "webpack:///./src/*.js": "${webRoot}/*.js",
       }
     }
   ]

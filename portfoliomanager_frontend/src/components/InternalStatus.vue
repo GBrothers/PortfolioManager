@@ -1,72 +1,143 @@
 <template>
-  <v-card
-    width="50px"
-    class="pa-0"
-    outlined
-    :style="{ border: '1px darken-2 grey' }"
-  >
+  <v-card width="108px" outlined>
+    <!-- First row -->
     <v-row class="align-center" no-gutters>
-      <div class="minitext">API</div>
-      <v-spacer />
-      <v-icon
-        v-show="apiStatus"
-        :color="iconFormat.ok.color"
-        :size="iconFormat.ok.size"
-        :class="iconFormat.ok.class"
+      <!-- First col -->
+      <v-card
+        width="45px"
+        class="d-flex elevation-0 primary"
+        @click="showAPIDialog = true"
       >
-        {{ iconFormat.ok.icon }}
-      </v-icon>
-      <v-icon
-        v-show="!apiStatus"
-        :color="iconFormat.error.color"
-        :size="iconFormat.error.size"
-        :class="iconFormat.ok.class"
+        <div class="minitext">API</div>
+        <v-spacer />
+        <v-icon
+          v-show="apiStatus"
+          :color="iconFormat.ok.color"
+          :size="iconFormat.ok.size"
+          :class="iconFormat.ok.class"
+        >
+          {{ iconFormat.ok.icon }}
+        </v-icon>
+        <v-icon
+          v-show="!apiStatus"
+          :color="iconFormat.error.color"
+          :size="iconFormat.error.size"
+          :class="iconFormat.ok.class"
+        >
+          {{ iconFormat.error.icon }}
+        </v-icon>
+      </v-card>
+      <v-dialog
+        width="280px"
+        :value="showAPIDialog"
+        @click:outside="closeAPIDialog"
       >
-        {{ iconFormat.error.icon }}
-      </v-icon>
+        <v-card color="primary">
+          <v-card-title primary-title>Backend API URL</v-card-title>
+          <v-text-field
+            v-model="newAPIIP"
+            outlined
+            class="mx-4"
+            solo-inverted
+            append-icon="mdi-send"
+            color="success"
+            :rules="rules"
+            @click:append="updateAPIIP"
+            @change="updateAPIIP"
+          >
+          </v-text-field>
+        </v-card>
+      </v-dialog>
+
+      <v-divider vertical class="mx-0 darken-2" />
+
+      <!-- Second Col -->
+      <v-card
+        @click="switchTheme"
+        class="d-flex primary elevation-0"
+        width="59px"
+      >
+        <div class="minitext">Theme</div>
+        <v-spacer />
+        <v-icon
+          size="95%"
+          :color="
+            this.$vuetify.theme.dark ? 'blue darken-1' : 'yellow darken-3'
+          "
+        >
+          {{
+            this.$vuetify.theme.dark ? "mdi-weather-night" : "mdi-weather-sunny"
+          }}
+        </v-icon>
+      </v-card>
     </v-row>
-    <v-divider class="mx-0 darken-2 grey" />
+
+    <v-divider class="mx-0" />
+
+    <!-- Second Row -->
     <v-row class="align-center" no-gutters>
-      <div class="minitext">DB</div>
+      <!-- First Col -->
+      <v-card width="45px" class="d-flex primary elevation-0">
+        <div class="minitext">DB</div>
+        <v-spacer />
+        <v-icon
+          v-show="dbStatus"
+          :color="iconFormat.ok.color"
+          :size="iconFormat.ok.size"
+          :class="iconFormat.ok.class"
+        >
+          {{ iconFormat.ok.icon }}
+        </v-icon>
+        <v-icon
+          v-show="!dbStatus"
+          :color="iconFormat.error.color"
+          :size="iconFormat.error.size"
+          :class="iconFormat.ok.class"
+        >
+          {{ iconFormat.error.icon }}
+        </v-icon>
+      </v-card>
+
+      <v-divider vertical class="mx-0" />
+
+      <!-- Second Col -->
+      <div class="minitext">-</div>
       <v-spacer />
-      <v-icon
-        v-show="dbStatus"
-        :color="iconFormat.ok.color"
-        :size="iconFormat.ok.size"
-        :class="iconFormat.ok.class"
-      >
-        {{ iconFormat.ok.icon }}
-      </v-icon>
-      <v-icon
-        v-show="!dbStatus"
-        :color="iconFormat.error.color"
-        :size="iconFormat.error.size"
-        :class="iconFormat.ok.class"
-      >
-        {{ iconFormat.error.icon }}
-      </v-icon>
+      <div class="minitext">-</div>
     </v-row>
-    <v-divider class="mx-0 darken-2 grey" />
+
+    <v-divider class="mx-0" />
+
+    <!-- Third Row -->
     <v-row class="align-center" no-gutters>
-      <div class="minitext">ext</div>
+      <!-- First Col -->
+      <v-card width="45px" class="d-flex primary elevation-0">
+        <div class="minitext">ext</div>
+        <v-spacer />
+        <v-progress-circular
+          v-show="hasRequestData"
+          :rotate="-90"
+          :value="requestUsage"
+          :size="15"
+          :color="requestUsageColor"
+          class="mr-02 mt-02"
+        >
+        </v-progress-circular>
+        <v-progress-circular
+          indeterminate
+          v-show="!hasRequestData"
+          :size="15"
+          color="grey darken-1"
+          class="mr-02 mt-03"
+        >
+        </v-progress-circular>
+      </v-card>
+      <v-divider vertical class="mx-0" />
+
+      <!-- Second Col -->
+      <div class="minitext">-</div>
       <v-spacer />
-      <v-progress-circular
-        v-show="hasRequestData"
-        :rotate="-90"
-        :value="requestUsage"
-        :size="15"
-        :color="requestUsageColor"
-        class="mr-02 mt-02"
-      >
-      </v-progress-circular>
-      <v-progress-circular
-        indeterminate
-        v-show="!hasRequestData"
-        :size="15"
-        color="grey darken-1"
-        class="mr-02 mt-03"
-      >
-      </v-progress-circular>
+      <div class="minitext">-</div>
     </v-row>
   </v-card>
 </template>
@@ -77,6 +148,8 @@ export default {
   name: "InternalStatus",
   data() {
     return {
+      showAPIDialog: false,
+      newAPIIP: "",
       apiResponse: null,
       dbResponse: null,
       drlResponse: {
@@ -86,6 +159,10 @@ export default {
       intervalAPI: null,
       intervalDB: null,
       intervalDRL: null,
+      rules: [
+        (value) => !!value || "Required.",
+        (value) => this.isURL(value) || "URL is not valid",
+      ],
       iconFormat: {
         ok: {
           color: "green",
@@ -104,7 +181,11 @@ export default {
   },
   computed: {
     apiStatus() {
-      return this.apiResponse == "nok" ? false : true
+      if (!this.apiResponse) return false
+      else if (this.apiResponse == "") return false
+      else if (this.apiResponse.toLowerCase().includes("nok")) return false
+      else if (this.apiResponse.toLowerCase().includes("404")) return false
+      return true
     },
     dbStatus() {
       return this.dbResponse == "nok" ? false : true
@@ -123,8 +204,12 @@ export default {
       if (this.drlResponse.daylimit == -1) return false
       return true
     },
+    APIIP() {
+      return bes.getAPIUrl()
+    },
   },
   created() {
+    this.newAPIIP = this.APIIP
     this.updateApiStatus()
     this.updateDBStatus()
     this.intervalAPI = setInterval(() => {
@@ -143,6 +228,32 @@ export default {
     clearInterval(this.intervalDRL)
   },
   methods: {
+    closeAPIDialog() {
+      this.newAPIIP = this.APIIP
+      this.showAPIDialog = false
+    },
+    updateAPIIP() {
+      bes.setAPIUrl(this.newAPIIP)
+      this.showAPIDialog = false
+    },
+
+    switchTheme() {
+      this.$vuetify.theme.dark = !this.$vuetify.theme.dark
+      localStorage.isdark = this.$vuetify.theme.dark
+    },
+    isURL(str) {
+      let url
+      try {
+        url = new URL(str)
+      } catch (_) {
+        return false
+      }
+
+      return (
+        (url.protocol === "http:" || url.protocol === "https:") &&
+        url.port != ""
+      )
+    },
     updateApiStatus() {
       bes
         .checkAPI()

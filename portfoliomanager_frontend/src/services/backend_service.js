@@ -1,7 +1,7 @@
 import axios from "axios"
 
 const apiClient = axios.create({
-  baseURL: `http://192.168.0.71:5001`,
+  baseURL: localStorage.baseAPIUrl,
   withCredentials: false,
   headers: {
     Accept: "application/json",
@@ -26,5 +26,12 @@ export default {
   },
   eodReqLimit() {
     return apiClient.get("/userdata?requests=1")
+  },
+  getAPIUrl() {
+    return apiClient.defaults.baseURL
+  },
+  setAPIUrl(newAPIIP) {
+    localStorage.baseAPIUrl = newAPIIP
+    apiClient.defaults.baseURL = newAPIIP
   },
 }
