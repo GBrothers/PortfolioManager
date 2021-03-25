@@ -148,10 +148,6 @@ export default {
       this.$emit("tickerChange", this.selected)
     },
     closeDialog() {
-      this.searchPhrase = ""
-      this.ticker = ""
-      this.tickers = []
-      this.searchFields = ""
       this.$emit("noTickerChange")
     },
   },
