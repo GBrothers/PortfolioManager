@@ -1,3 +1,11 @@
+<!--
+Usage:
+      <TickerLookup
+        :show-dialog="showLookup"        [Property: Boolean if component is visible]
+        @tickerChange="tickerChange"     [Event: ticker selected with ticker symbol as attribute]
+        @noTickerChange="noTickerChange" [Event: clicked outside the lookup dialog, no ticker selected]
+      />
+-->
 <template>
   <v-dialog
     v-model="showDialog"
@@ -21,6 +29,8 @@
                 dense
                 outlined
                 height="40px"
+                class="cursordark"
+                :class="{ cursorlight: !this.$vuetify.theme.dark }"
                 :value="searchPhrase"
                 @change="(v) => (searchPhrase = v)"
               ></v-text-field>
@@ -153,3 +163,13 @@ export default {
   },
 }
 </script>
+
+<style lang="scss" scoped>
+.cursordark {
+  caret-color: rgb(204, 150, 255) !important;
+}
+
+.cursorlight {
+  caret-color: rgb(99, 72, 124) !important;
+}
+</style>

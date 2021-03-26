@@ -1,23 +1,14 @@
 <template>
-  <v-app-bar clipped-left app color="primary" flat>
+  <v-app-bar clipped-left app flat class="topGradient">
     <v-app-bar-nav-icon />
-    <v-app-bar-title>
-      Portfoliomanager <br />
-      V0.1
-    </v-app-bar-title>
-    <template>
-      <v-row justify="center" align="center">
-        <v-spacer></v-spacer>
-        <v-col cols="auto">
-          <InternalStatus />
-        </v-col>
-      </v-row>
-    </template>
+    <v-app-bar-title>Portfoliomanager<br />V0.01 dev</v-app-bar-title>
+    <v-spacer />
+    <InternalStatus />
   </v-app-bar>
 </template>
 
 <script>
-import InternalStatus from "@/components/InternalStatus.vue"
+import InternalStatus from "@/components/InternalStatus/InternalStatus.vue"
 export default {
   name: "BarTop",
   components: {
@@ -27,11 +18,17 @@ export default {
   data() {
     return {}
   },
-  computed: {
-    Theme() {
-      return localStorage.isdark
-    },
-  },
+  computed: {},
   methods: {},
 }
 </script>
+
+<style lang="scss" scoped>
+.topGradient {
+  background: linear-gradient(
+    180deg,
+    var(--vuetify-gradientbegin) 0%,
+    var(--vuetify-gradientend) 100%
+  );
+}
+</style>

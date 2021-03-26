@@ -4,8 +4,7 @@
     clipped
     expand-on-hover
     floating
-    color="primary"
-    overlay-color="error"
+    class="leftGradient"
     width="180px"
   >
     <v-list dense nav>
@@ -38,6 +37,7 @@ export default {
           link: "Fundamentals",
         },
         { title: "Portfolio", icon: "mdi-text-box", link: "Portfolio" },
+        { title: "Investopedia", icon: "mdi-school", link: "Investopedia" },
         { title: "About", icon: "mdi-help-box", link: "About" },
       ],
       right: null,
@@ -45,3 +45,14 @@ export default {
   },
 }
 </script>
+
+<style lang="scss" scoped>
+.leftGradient {
+  background: rgb(26, 26, 45);
+  background: linear-gradient(
+    0deg,
+    var(--vuetify-gradientbegin) 0%,
+    var(--vuetify-gradientend) 100%
+  );
+}
+</style>

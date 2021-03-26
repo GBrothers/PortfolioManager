@@ -8,7 +8,7 @@ Vue.use(Vuetify)
 
 export default new Vuetify({
   theme: {
-    dark: localStorage.isdark,
+    dark: true,
     themes: {
       light: {
         primary: "#f5e8ff",
@@ -18,15 +18,27 @@ export default new Vuetify({
         warning: "#cddc39",
         info: "#00bcd4",
         success: "#4caf50",
+
+        // custom properties
+        background: "red",
+        gradientbegin: "#e7cfff",
+        gradientend: "#f5ebff",
+        gradientbeginfundamental: "#fffeb9",
       },
       dark: {
         primary: "#303050",
-        secondary: "#673ab7",
+        secondary: "#673007",
         accent: "#e91e63",
         error: "#f44336",
         warning: "#cddc39",
         info: "#00bcd4",
         success: "#4caf50",
+
+        // custom properties
+        background: "purple",
+        gradientbegin: "#1a1a2d",
+        gradientend: "#303050",
+        gradientbeginfundamental: "#444303",
       },
     },
   },
