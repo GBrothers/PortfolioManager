@@ -54,12 +54,12 @@ def update_logo(tickers):
 
 
 def main(argv):
-    if len(argv) <= 1:
-        print("Two Arguments required!")
-        return
-    # ticker = fund.get_index_constituents('gspc.indx')
-    # update_fundamentals(ticker)
-    update_logo("a.us")
+    # if len(argv) <= 1:
+    #     print("Two Arguments required!")
+    #     return
+
+    # update_fundamentals(fund.get_index_constituents('gspc.indx'))
+    update_logo(fund.get_index_constituents('gspc.indx'))
 
 
 if __name__ == "__main__":
