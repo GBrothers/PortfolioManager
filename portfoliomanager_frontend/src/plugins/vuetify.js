@@ -1,9 +1,6 @@
 import Vue from "vue"
 import Vuetify from "vuetify/lib/framework"
 
-// eslint-disable-next-line no-unused-vars
-import colors from "vuetify/lib/util/colors"
-
 Vue.use(Vuetify)
 
 export default new Vuetify({
@@ -24,6 +21,7 @@ export default new Vuetify({
         gradientbegin: "#e7cfff",
         gradientend: "#f5ebff",
         gradientbeginfundamental: "#fffeb9",
+        h1: "#6600cc",
       },
       dark: {
         primary: "#303050",
@@ -39,6 +37,7 @@ export default new Vuetify({
         gradientbegin: "#1a1a2d",
         gradientend: "#303050",
         gradientbeginfundamental: "#444303",
+        h1: "#bfbfd9",
       },
     },
   },

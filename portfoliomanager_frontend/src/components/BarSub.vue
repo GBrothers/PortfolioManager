@@ -1,5 +1,5 @@
 <template>
-  <v-system-bar height="60px" :class="altClass">
+  <v-system-bar height="40px" :class="altClass">
     <slot></slot>
     <v-spacer></v-spacer>
   </v-system-bar>

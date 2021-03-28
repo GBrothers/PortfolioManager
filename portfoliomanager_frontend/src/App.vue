@@ -28,8 +28,17 @@ export default {
 html {
   overflow-y: auto;
 }
+
+h1 {
+  font-size: 1.6em;
+  font-family: "Amatic SC";
+  color: var(--vuetify-h1);
+}
+
 .minitext {
   font-size: 0.7em;
+  font-family: "Merriweather Sans";
+  color: var(--vuetify-h1);
   margin-left: 2px;
   margin-top: 1px;
   margin-bottom: 1px;

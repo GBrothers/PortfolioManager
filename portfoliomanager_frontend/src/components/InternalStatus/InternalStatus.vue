@@ -6,7 +6,10 @@
       <APIStatus width="45px" />
       <v-divider vertical class="mx-0 darken-2" />
       <!-- Second Col -->
-      <ThemeChange width="58px" />
+      <DRLStatus width="45px" />
+      <v-divider vertical class="mx-0 darken-2" />
+      <!-- Third Col -->
+      <ThemeChange width="57px" />
     </v-row>
     <v-divider class="mx-0" />
 
@@ -16,18 +19,22 @@
       <DBStatus width="45px" />
       <v-divider vertical class="mx-0" />
       <!-- Second Col -->
-      <div class="minitext">-</div>
+      <v-card
+        class="d-flex elevation-0 minitext"
+        color="rgb(0,0,0,0)"
+        width="45px"
+        >-</v-card
+      >
+      <v-divider vertical class="mx-0" />
+      <!-- Third Col -->
+      <v-card
+        class="d-flex elevation-0 minitext"
+        color="rgb(0,0,0,0)"
+        width="57px"
+        >-</v-card
+      >
     </v-row>
     <v-divider class="mx-0" />
-
-    <!-- Third Row -->
-    <v-row class="align-center" no-gutters>
-      <!-- First Col -->
-      <DRLStatus width="45px" />
-      <v-divider vertical class="mx-0" />
-      <!-- Second Col -->
-      <div class="minitext">-</div>
-    </v-row>
   </v-card>
 </template>
 

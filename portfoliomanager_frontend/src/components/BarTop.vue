@@ -1,7 +1,7 @@
 <template>
-  <v-app-bar clipped-left app flat class="topGradient">
+  <v-app-bar clipped-left app flat class="topGradient" height="50px">
     <v-app-bar-nav-icon />
-    <v-app-bar-title>Portfoliomanager<br />V0.01 dev</v-app-bar-title>
+    <h1 class="ml-5">Portfoliomanager V0.01 dev</h1>
     <v-spacer />
     <InternalStatus />
   </v-app-bar>

@@ -31,7 +31,7 @@ Usage:
                 height="40px"
                 class="cursordark"
                 :class="{ cursorlight: !this.$vuetify.theme.dark }"
-                :value="searchPhrase"
+                :value="cEquitySearch.searchPhrase"
                 @change="(v) => (searchPhrase = v)"
               ></v-text-field>
             </v-col>
@@ -47,7 +47,7 @@ Usage:
                 disable-pagination
                 fixed-header
                 :headers="headers"
-                :items="tickers"
+                :items="cEquitySearch.results"
                 sort-by="ticker"
                 no-data-text=""
                 @click:row="selectRow"
@@ -56,13 +56,15 @@ Usage:
                   <v-container class="primary">
                     <v-row justify="center" no-gutters>
                       {{
-                        tickers.length == 0
+                        cEquitySearch.results.length == 0
                           ? ticker.length == 0
                             ? "Please enter a search phrase "
                             : "No matching companies found"
                           : "Found " +
-                            tickers.length +
-                            (tickers.length == 1 ? " company" : " companies")
+                            cEquitySearch.results.length +
+                            (cEquitySearch.results.length == 1
+                              ? " company"
+                              : " companies")
                       }}
                     </v-row>
                   </v-container>
@@ -78,6 +80,7 @@ Usage:
 
 <script>
 import bes from "@/services/backend_service.js"
+import { mapState } from "vuex"
 export default {
   name: "TickerLookup",
   props: {
@@ -89,7 +92,6 @@ export default {
       snackbar: false,
       searchPhrase: "",
       ticker: "",
-      tickers: [],
       selected: "",
       headers: [
         {
@@ -119,9 +121,13 @@ export default {
       ],
     }
   },
+  computed: mapState({
+    cEquitySearch: "currentEquitySearch",
+  }),
   watch: {
     searchPhrase: function () {
       this.searchPhrase = this.searchPhrase.trim()
+      this.cEquitySearch.searchPhrase = this.searchPhrase
       this.ticker = ""
       this.searchFields = ""
 
@@ -144,7 +150,7 @@ export default {
         bes
           .searchTicker(this.ticker, this.searchFields)
           .then((response) => {
-            this.tickers = response.data
+            this.cEquitySearch.results = response.data
           })
           .catch((error) => {
             console.log(error)
@@ -154,8 +160,7 @@ export default {
   },
   methods: {
     selectRow(event) {
-      this.selected = event.ticker
-      this.$emit("tickerChange", this.selected)
+      this.$emit("tickerChange", { ticker: event.ticker, name: event.name })
     },
     closeDialog() {
       this.$emit("noTickerChange")

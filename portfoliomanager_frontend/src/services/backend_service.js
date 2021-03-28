@@ -10,14 +10,7 @@ const apiClient = axios.create({
 })
 
 export default {
-  searchTicker(phrase, fields) {
-    return apiClient.get("/search", {
-      params: {
-        phrase: phrase,
-        fields: fields,
-      },
-    })
-  },
+  // Internals
   checkAPI() {
     return apiClient.get("/")
   },
@@ -33,5 +26,24 @@ export default {
   setAPIUrl(newAPIIP) {
     localStorage.baseAPIUrl = newAPIIP
     apiClient.defaults.baseURL = newAPIIP
+  },
+
+  // Search
+  searchTicker(phrase, fields) {
+    return apiClient.get("/search", {
+      params: {
+        phrase: phrase,
+        fields: fields,
+      },
+    })
+  },
+
+  // Fundamentals
+  getLogoPath(ticker) {
+    return apiClient.get("/fundamentals/logopath", {
+      params: {
+        ticker: ticker,
+      },
+    })
   },
 }

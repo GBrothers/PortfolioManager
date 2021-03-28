@@ -59,6 +59,17 @@ def get_fundamentals():
         result = "No Data found for ticker " + ticker
     return result
 
+@ app.route('/fundamentals/logopath', methods=['GET'])
+def get_logo_path():
+    if 'ticker' not in request.args:
+        return "Error: param ticker not found"
+    ticker = request.args.get('ticker')
+    log.info("Request for %s", ticker)
+    result = mc.get_fundamentals_logo_path(ticker)
+    if result is None:
+        log.warning("No Logo found for ticker %s", ticker)
+        result = "No Logo found for ticker " + ticker
+    return result
 
 @ app.route('/search', methods=['GET'])
 def find_stock():

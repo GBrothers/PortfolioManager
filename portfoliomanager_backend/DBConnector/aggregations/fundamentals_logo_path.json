@@ -1,8 +1,12 @@
 [
   {
-    "$match": { "ticker": "<1>" }
+    "$match": {
+      "ticker": "<1>"
+    }
   },
   {
-    "$set": { "LogoURL": "$data.General.LogoURL" }
+    "$set": {
+      "LogoURL": "$data.General.LogoURL"
+    }
   }
 ]

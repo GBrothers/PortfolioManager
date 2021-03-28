@@ -1,25 +1,23 @@
 <template>
   <div>
     <SubBar altClass="subBarGradientFundamentals">
-      <v-btn @click="showLookup = true">Lookup</v-btn>
-      <v-spacer></v-spacer>
-      <h2>{{ currentTicker }}</h2>
+      <h3>
+        {{ cEquity.name }} -
+        {{ cEquity.ticker }}
+      </h3>
     </SubBar>
-    <TickerLookup
-      :showDialog="showLookup"
-      @tickerChange="tickerChange"
-      @noTickerChange="showLookup = false"
-    />
+    <StockLogo :ticker="cEquity.ticker" />
   </div>
 </template>
 
 <script>
-import TickerLookup from "@/components/TickerLookup.vue"
 import SubBar from "@/components/BarSub.vue"
+import StockLogo from "@/components/StockLogo.vue"
+import { mapState } from "vuex"
 export default {
   components: {
     SubBar,
-    TickerLookup,
+    StockLogo,
   },
   data() {
     return {
@@ -27,12 +25,9 @@ export default {
       currentTicker: "",
     }
   },
-  methods: {
-    tickerChange(ticker) {
-      this.currentTicker = ticker
-      this.showLookup = false
-    },
-  },
+  computed: mapState({
+    cEquity: "currentEquity",
+  }),
 }
 </script>
 
