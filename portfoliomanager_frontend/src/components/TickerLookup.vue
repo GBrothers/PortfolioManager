@@ -160,7 +160,12 @@ export default {
   },
   methods: {
     selectRow(event) {
-      this.$emit("tickerChange", { ticker: event.ticker, name: event.name })
+      this.$emit("tickerChange", {
+        ticker: event.ticker,
+        name: event.name,
+        exchange: event.exchange,
+        isin: event.isin,
+      })
     },
     closeDialog() {
       this.$emit("noTickerChange")

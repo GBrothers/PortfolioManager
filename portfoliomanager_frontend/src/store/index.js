@@ -8,14 +8,21 @@ export default new Vuex.Store({
     currentEquity: {
       ticker: "",
       name: "",
+      exchange: "",
+      isin: "",
       logopath: "",
     },
     currentEquitySearch: {
       searchPhrase: "",
       results: [],
-    }
+    },
   },
   mutations: {},
   actions: {},
   modules: {},
+  getters: {
+    currentEquity: (state) => {
+      return state.currentEquity
+    },
+  },
 })

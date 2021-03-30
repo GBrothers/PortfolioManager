@@ -1,5 +1,5 @@
 <template>
-  <v-system-bar height="40px" :class="altClass">
+  <v-system-bar :height="height" :class="altClass">
     <slot></slot>
     <v-spacer></v-spacer>
   </v-system-bar>
@@ -8,6 +8,10 @@
 <script>
 export default {
   props: {
+    height: {
+      type: String,
+      default: "50px",
+    },
     altClass: {
       type: String,
       default: "subBarGradient",

@@ -1,12 +1,15 @@
 <template>
   <div>
-    <SubBar altClass="subBarGradientFundamentals">
-      <h3>
-        {{ cEquity.name }} -
-        {{ cEquity.ticker }}
-      </h3>
+    <SubBar height="60px" altClass="subBarGradientFundamentals">
+      <StockLogo :ticker="cEquity.ticker" />
+      <div v-show="cEquity.ticker != ''">
+        <h3>{{ cEquity.name }}</h3>
+        <div style="font-size: 80%">
+          {{ cEquity.ticker.toUpperCase() }} | {{ cEquity.exchange }} |
+          {{ cEquity.isin }}
+        </div>
+      </div>
     </SubBar>
-    <StockLogo :ticker="cEquity.ticker" />
   </div>
 </template>
 

@@ -61,4 +61,8 @@ h1 {
 .mt-01 {
   margin-top: 1px;
 }
+
+.pa-01 {
+  padding: 1px;
+}
 </style>
