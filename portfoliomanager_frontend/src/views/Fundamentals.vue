@@ -1,12 +1,13 @@
 <template>
   <div>
     <SubBar height="60px" altClass="subBarGradientFundamentals">
-      <StockLogo :ticker="cEquity.ticker" />
-      <div v-show="cEquity.ticker != ''">
-        <h3>{{ cEquity.name }}</h3>
+      <StockLogo :ticker="currentEquity.ticker" />
+      <div v-show="currentEquity.ticker != ''">
+        <h3>{{ currentEquity.name }}</h3>
         <div style="font-size: 80%">
-          {{ cEquity.ticker.toUpperCase() }} | {{ cEquity.exchange }} |
-          {{ cEquity.isin }}
+          {{ currentEquity.ticker.toUpperCase() }} |
+          {{ currentEquity.exchange }} |
+          {{ currentEquity.isin }}
         </div>
       </div>
     </SubBar>
@@ -28,9 +29,9 @@ export default {
       currentTicker: "",
     }
   },
-  computed: mapState({
-    cEquity: "currentEquity",
-  }),
+  computed: {
+    ...mapState(["currentEquity"]),
+  },
 }
 </script>
 

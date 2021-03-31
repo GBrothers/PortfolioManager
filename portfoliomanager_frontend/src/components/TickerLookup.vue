@@ -31,8 +31,8 @@ Usage:
                 height="40px"
                 class="cursordark"
                 :class="{ cursorlight: !this.$vuetify.theme.dark }"
-                :value="cEquitySearch.searchPhrase"
-                @change="(v) => (searchPhrase = v)"
+                :value="ces.searchPhrase"
+                @change="(v) => (inputPhrase = v)"
               ></v-text-field>
             </v-col>
           </v-row>
@@ -47,7 +47,7 @@ Usage:
                 disable-pagination
                 fixed-header
                 :headers="headers"
-                :items="cEquitySearch.results"
+                :items="ces.results"
                 sort-by="ticker"
                 no-data-text=""
                 @click:row="selectRow"
@@ -56,15 +56,13 @@ Usage:
                   <v-container class="primary">
                     <v-row justify="center" no-gutters>
                       {{
-                        cEquitySearch.results.length == 0
+                        resultLength == 0
                           ? ticker.length == 0
                             ? "Please enter a search phrase "
                             : "No matching companies found"
                           : "Found " +
-                            cEquitySearch.results.length +
-                            (cEquitySearch.results.length == 1
-                              ? " company"
-                              : " companies")
+                            resultLength +
+                            (resultLength == 1 ? " company" : " companies")
                       }}
                     </v-row>
                   </v-container>
@@ -79,8 +77,7 @@ Usage:
 </template>
 
 <script>
-import bes from "@/services/backend_service.js"
-import { mapState } from "vuex"
+import { mapState, mapGetters } from "vuex"
 export default {
   name: "TickerLookup",
   props: {
@@ -88,10 +85,7 @@ export default {
   },
   data() {
     return {
-      searchFields: "",
-      snackbar: false,
-      searchPhrase: "",
-      ticker: "",
+      inputPhrase: "",
       selected: "",
       headers: [
         {
@@ -121,41 +115,39 @@ export default {
       ],
     }
   },
-  computed: mapState({
-    cEquitySearch: "currentEquitySearch",
-  }),
-  watch: {
-    searchPhrase: function () {
-      this.searchPhrase = this.searchPhrase.trim()
-      this.cEquitySearch.searchPhrase = this.searchPhrase
-      this.ticker = ""
-      this.searchFields = ""
-
-      if (this.searchPhrase != "") {
-        let sphrase = this.searchPhrase.split(":")
+  computed: {
+    ...mapState({
+      ces: (state) => state.tickerlookup.currentEquitySearch,
+    }),
+    ...mapGetters({
+      resultLength: "tickerlookup/currentEquitySearchResultLength",
+    }),
+    ticker() {
+      let sphrase = this.inputPhrase.split(":")
+      return sphrase.length == 1 ? sphrase[0].trim() : sphrase[1].trim()
+    },
+    searchFields() {
+      let searchFields = ""
+      if (this.inputPhrase != "") {
+        let sphrase = this.inputPhrase.split(":")
         if (sphrase.length == 1) {
-          this.searchFields = "tn"
-          this.ticker = this.searchPhrase
-        }
-        if (sphrase.length == 2) {
-          this.searchFields = ""
-          sphrase[0].includes("t") ? (this.searchFields += "t") : ""
-          sphrase[0].includes("n") ? (this.searchFields += "n") : ""
-          sphrase[0].includes("e") ? (this.searchFields += "e") : ""
-          sphrase[0].includes("i") ? (this.searchFields += "i") : ""
-          this.ticker = sphrase[1]
+          searchFields = "tn"
+        } else {
+          sphrase[0].includes("t") ? (searchFields += "t") : ""
+          sphrase[0].includes("n") ? (searchFields += "n") : ""
+          sphrase[0].includes("e") ? (searchFields += "e") : ""
+          sphrase[0].includes("i") ? (searchFields += "i") : ""
         }
       }
-      if (this.ticker != "") {
-        bes
-          .searchTicker(this.ticker, this.searchFields)
-          .then((response) => {
-            this.cEquitySearch.results = response.data
-          })
-          .catch((error) => {
-            console.log(error)
-          })
-      }
+      return searchFields
+    },
+  },
+  watch: {
+    inputPhrase: function () {
+      this.$store.dispatch("tickerlookup/doEquitySearch", {
+        ticker: this.ticker,
+        fields: this.searchFields,
+      })
     },
   },
   methods: {
