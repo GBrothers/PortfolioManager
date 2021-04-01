@@ -1,13 +1,21 @@
 <template>
   <div>
     <SubBar height="60px" altClass="subBarGradientFundamentals">
-      <StockLogo :ticker="currentEquity.ticker" />
-      <div v-show="currentEquity.ticker != ''">
-        <h3>{{ currentEquity.name }}</h3>
+      <StockLogo :ticker="ce.ticker" :contextID="ctxID" />
+      <div v-show="ce.ticker != ''">
+        <h3>{{ ce.name }}</h3>
         <div style="font-size: 80%">
-          {{ currentEquity.ticker.toUpperCase() }} |
-          {{ currentEquity.exchange }} |
-          {{ currentEquity.isin }}
+          {{ ce.ticker.toUpperCase() }} | {{ ce.exchange }} |
+          {{ ce.isin }}
+        </div>
+      </div>
+
+      <StockLogo :ticker="ce1.ticker" contextID="Fund2" />
+      <div v-show="ce1.ticker != ''">
+        <h3>{{ ce1.name }}</h3>
+        <div style="font-size: 80%">
+          {{ ce1.ticker.toUpperCase() }} | {{ ce1.exchange }} |
+          {{ ce1.isin }}
         </div>
       </div>
     </SubBar>
@@ -17,7 +25,6 @@
 <script>
 import SubBar from "@/components/BarSub.vue"
 import StockLogo from "@/components/StockLogo.vue"
-import { mapState } from "vuex"
 export default {
   components: {
     SubBar,
@@ -25,12 +32,18 @@ export default {
   },
   data() {
     return {
+      ctxID: "Fund",
       showLookup: false,
       currentTicker: "",
     }
   },
   computed: {
-    ...mapState(["currentEquity"]),
+    ce() {
+      return this.$store.getters["equityselect/getEquity"](this.ctxID)
+    },
+    ce1() {
+      return this.$store.getters["equityselect/getEquity"]("Fund2")
+    },
   },
 }
 </script>
