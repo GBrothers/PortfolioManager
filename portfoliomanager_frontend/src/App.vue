@@ -35,6 +35,12 @@ h1 {
   color: var(--vuetify-h1);
 }
 
+h3 {
+  font-size: 1.3em;
+  color: var(--vuetify-h1);
+  line-height: 1em;
+}
+
 .minitext {
   font-size: 0.7em;
   font-family: "Merriweather Sans";
@@ -44,6 +50,11 @@ h1 {
   margin-bottom: 1px;
   padding-bottom: 0px;
   padding-top: 0px;
+}
+.smalltext {
+  font-size: 0.8em;
+  font-family: "Merriweather Sans";
+  color: var(--vuetify-h1);
 }
 
 .mr-02 {

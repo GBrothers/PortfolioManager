@@ -1,23 +1,20 @@
 <template>
   <div>
     <SubBar height="60px" altClass="subBarGradientFundamentals">
-      <StockLogo :ticker="ce.ticker" :contextID="ctxID" />
-      <div v-show="ce.ticker != ''">
-        <h3>{{ ce.name }}</h3>
-        <div style="font-size: 80%">
-          {{ ce.ticker.toUpperCase() }} | {{ ce.exchange }} |
-          {{ ce.isin }}
-        </div>
+      <div v-for="ctxID in ctxIDs" :key="ctxID">
+        <StockLogo :contextID="ctxID" />
       </div>
-
-      <StockLogo :ticker="ce1.ticker" contextID="Fund2" />
-      <div v-show="ce1.ticker != ''">
-        <h3>{{ ce1.name }}</h3>
-        <div style="font-size: 80%">
-          {{ ce1.ticker.toUpperCase() }} | {{ ce1.exchange }} |
-          {{ ce1.isin }}
-        </div>
-      </div>
+      <v-icon
+        v-show="lastID < maxID"
+        @click="addCtxID"
+        class="ml-5"
+        size="30px"
+      >
+        mdi-plus-circle
+      </v-icon>
+      <v-icon v-show="lastID > 1" @click="removeCtxID" class="ml-5" size="30px">
+        mdi-minus-circle
+      </v-icon>
     </SubBar>
   </div>
 </template>
@@ -32,17 +29,25 @@ export default {
   },
   data() {
     return {
-      ctxID: "Fund",
       showLookup: false,
-      currentTicker: "",
+      ctxIDs: ["Fund-1"],
+      lastID: 1,
+      maxID: 4,
     }
   },
   computed: {
     ce() {
-      return this.$store.getters["equityselect/getEquity"](this.ctxID)
+      return this.$store.getters["equityselect/getEquity"]
     },
-    ce1() {
-      return this.$store.getters["equityselect/getEquity"]("Fund2")
+  },
+  methods: {
+    addCtxID() {
+      this.lastID += 1
+      this.ctxIDs.push("Fund-" + this.lastID)
+    },
+    removeCtxID() {
+      this.lastID -= 1
+      this.ctxIDs.length = this.ctxIDs.length - 1
     },
   },
 }

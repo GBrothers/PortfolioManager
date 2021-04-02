@@ -17,7 +17,7 @@ export default new Vuetify({
         success: "#4caf50",
 
         // custom properties
-        background: "red",
+        background: "#e00",
         gradientbegin: "#e7cfff",
         gradientend: "#f5ebff",
         gradientbeginfundamental: "#fffeb9",
@@ -33,7 +33,7 @@ export default new Vuetify({
         success: "#4caf50",
 
         // custom properties
-        background: "purple",
+        background: "#0a0",
         gradientbegin: "#1a1a2d",
         gradientend: "#303050",
         gradientbeginfundamental: "#444303",
