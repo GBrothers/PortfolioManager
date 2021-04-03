@@ -65,6 +65,14 @@ h3 {
   margin-right: 1px;
 }
 
+.ml-02 {
+  margin-left: 2px;
+}
+
+.ml-01 {
+  margin-left: 1px;
+}
+
 .mt-02 {
   margin-top: 2px;
 }

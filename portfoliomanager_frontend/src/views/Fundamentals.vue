@@ -5,17 +5,28 @@
         <StockLogo :contextID="ctxID" />
       </div>
       <v-icon
-        v-show="lastID < maxID"
+        v-show="this.ctxIDs.length < maxID"
         @click="addCtxID"
         class="ml-5"
         size="30px"
       >
         mdi-plus-circle
       </v-icon>
-      <v-icon v-show="lastID > 1" @click="removeCtxID" class="ml-5" size="30px">
+      <v-icon
+        v-show="this.ctxIDs.length > 1"
+        @click="removeCtxID"
+        class="ml-5"
+        size="30px"
+      >
         mdi-minus-circle
       </v-icon>
     </SubBar>
+    <v-card v-if="se" class="d-inline-block ma-10">
+      <div>{{ se.ticker }}</div>
+      <div>{{ se.name }}</div>
+      <div>{{ se.exchange }}</div>
+      <div>{{ se.isin }}</div>
+    </v-card>
   </div>
 </template>
 
@@ -30,24 +41,23 @@ export default {
   data() {
     return {
       showLookup: false,
-      ctxIDs: ["Fund-1"],
-      lastID: 1,
       maxID: 4,
     }
   },
   computed: {
-    ce() {
-      return this.$store.getters["equityselect/getEquity"]
+    se() {
+      return this.$store.getters["equityselect/selectedEquity"]
+    },
+    ctxIDs() {
+      return this.$store.state.equityselect.ctxIDs
     },
   },
   methods: {
     addCtxID() {
-      this.lastID += 1
-      this.ctxIDs.push("Fund-" + this.lastID)
+      this.$store.dispatch("equityselect/addCtxID")
     },
     removeCtxID() {
-      this.lastID -= 1
-      this.ctxIDs.length = this.ctxIDs.length - 1
+      this.$store.dispatch("equityselect/removeCtxID")
     },
   },
 }

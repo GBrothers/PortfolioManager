@@ -15,12 +15,33 @@
       </v-card>
 
       <!-- InfoText -->
-      <v-card max-width="250px" class="ml-2 mr-5" color="rgb(0,0,0,0)" flat>
-        <div v-show="ce.ticker == ''">
+      <v-card
+        v-if="ce.ticker == ''"
+        max-width="250px"
+        class="ml-02 mr-4 pa-1"
+        color="rgb(0,0,0,0)"
+        height="50px"
+        flat
+      >
+        <div>
           <h3>No Equity selected</h3>
-          <div>click on the search icon...</div>
+          <div class="smalltext">click on the search icon...</div>
         </div>
-        <div v-show="ce.ticker != ''">
+      </v-card>
+
+      <v-card
+        v-if="ce.ticker != ''"
+        max-width="250px"
+        :class="
+          isActive
+            ? 'ml-02 mr-5 pa-1 elevation-2'
+            : 'ml-02 mr-5 pa-1 elevation-0'
+        "
+        :color="isActive ? 'rgb(255, 255, 255, 0.15)' : 'rgb(0, 0, 0, 0)'"
+        :height="isActive ? '52px' : '50px'"
+        hover
+      >
+        <div v-show="ce.ticker != ''" @click="setActiveEquity">
           <h3>{{ ce.name }}</h3>
           <div class="smalltext">
             {{ ce.ticker.toUpperCase() }} | {{ ce.exchange }} |
@@ -54,13 +75,18 @@ export default {
   },
   computed: {
     ce() {
-      return this.$store.getters["equityselect/getEquity"](this.contextID)
+      return this.$store.getters["equityselect/getEquityForCtx"](this.contextID)
+    },
+    isActive() {
+      return (
+        this.$store.getters["equityselect/getActiveCtxID"] == this.contextID
+      )
     },
   },
   methods: {
     tickerChange(event) {
       this.showLookup = false
-      this.$store.dispatch("equityselect/setCurrentEquity", {
+      this.$store.dispatch("equityselect/addEquity", {
         id: this.contextID,
         ticker: event.ticker,
         name: event.name,
@@ -68,6 +94,9 @@ export default {
         isin: event.isin,
         // logopath is added by the store action
       })
+    },
+    setActiveEquity() {
+      this.$store.dispatch("equityselect/setActiveEquity", this.contextID)
     },
   },
 }
