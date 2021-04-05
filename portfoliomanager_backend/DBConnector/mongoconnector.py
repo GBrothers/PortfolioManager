@@ -1,8 +1,9 @@
 import json
-import subprocess
 import pymongo
 from Helper import logmngr, configmngr as config, datetimehelper as dth
 from Helper import calchelper as calch
+from DBConnector import cons
+
 from DBConnector.aggregations import aggregations
 
 log = logmngr.get_logger()
@@ -21,6 +22,8 @@ intraday_collection = db.get_collection(
     config.get_config("database", "mongodb-coll-eodhd_intraday"))
 stock_fundamentals_collection = db.get_collection(
     config.get_config("database", "mongodb-coll-eodhd-stock-fundamentals"))
+exchanges_collection = db.get_collection(
+    config.get_config("database", "mongodb-coll-eodhd-exchanges"))
 log.info("Database Connection established")
 
 
@@ -79,6 +82,80 @@ def update_stock_fundamentals(ticker, data):
     stock_fundamentals_collection.replace_one(
         tfilter, new_data, upsert=True)
     log.info("stock fundamentals updated for ticker %s", ticker)
+
+
+def update_exchange_list(data):
+    new_data = {
+        'name': 'exchangelist',
+        'data': data
+    }
+    exchanges_collection.replace_one(
+        {'name': 'exchangelist'}, new_data, upsert=True)
+
+
+def get_exchange_list():
+    result = exchanges_collection.find_one({'name': 'exchangelist'})
+    return json.dumps(result["data"])
+
+
+def update_exchange_tickers(exchange, tickers):
+    tickers_common_stock = []
+    tickers_fund = []
+    tickers_mutual_fund = []
+    tickers_etf = []
+    tickers_misc = []
+
+    for ticker in tickers:
+        ticker['Type'] = ticker['Type'].upper()
+        if ticker['Type'] == cons.EQUITY_COMMON_STOCK:
+            tickers_common_stock.append(ticker)
+        elif ticker['Type'] == cons.EQUITY_ETF:
+            tickers_etf.append(ticker)
+        elif ticker['Type'] == cons.EQUITY_FUND:
+            tickers_fund.append(ticker)
+        elif ticker['Type'] == cons.EQUITY_MUTUAL_FUND:
+            tickers_mutual_fund.append(ticker)
+        else:
+            tickers_misc.append(ticker)
+    if len(tickers_misc) > 0:
+        log.error("%s equities imported to type 'Misc'. Check MongoDB!",
+                  len(tickers_misc))
+
+    new_common_stock = {
+        'exchange': exchange,
+        'type': cons.EQUITY_COMMON_STOCK,
+        'data': tickers_common_stock
+    }
+
+    new_etf = {
+        'exchange': exchange,
+        'type': cons.EQUITY_ETF,
+        'data': tickers_etf
+    }
+
+    new_fund = {
+        'exchange': exchange,
+        'type': cons.EQUITY_FUND,
+        'data': tickers_fund
+    }
+
+    new_misc = {
+        'exchange': exchange,
+        'type': cons.EQUITY_MISC,
+        'data': tickers_misc
+    }
+
+    exchanges_collection.replace_one(
+        {'exchange': exchange, 'type': cons.EQUITY_COMMON_STOCK}, new_common_stock, upsert=True)
+
+    exchanges_collection.replace_one(
+        {'exchange': exchange, 'type': cons.EQUITY_ETF}, new_etf, upsert=True)
+
+    exchanges_collection.replace_one(
+        {'exchange': exchange, 'type': cons.EQUITY_FUND}, new_fund, upsert=True)
+
+    exchanges_collection.replace_one(
+        {'exchange': exchange, 'type': cons.EQUITY_MISC}, new_misc, upsert=True)
 
 
 def check_ticker_exists(ticker):

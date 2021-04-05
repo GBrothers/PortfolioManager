@@ -71,6 +71,20 @@ def get_logo_path():
         result = "No Logo found for ticker " + ticker
     return result
 
+@ app.route('/fundamentals/exchangelist', methods=['GET'])
+def get_exchange_list():
+    result = mc.get_exchange_list()
+    return result
+
+@ app.route('/fundamentals/exchangetickers', methods=['GET'])
+def get_exchange_tickers():
+    if 'exchange' not in request.args:
+        log.error(
+            "no exchange param")
+        return "Error: no exchange param"
+    result = mc.get_exchange_tickers(request.args['exchange'])
+    return result
+
 @ app.route('/search', methods=['GET'])
 def find_stock():
     if 'phrase' not in request.args and 'fields' not in request.args:

@@ -29,6 +29,26 @@ def get_index_constituents(index, incl_delist=False, only_ticker=True):
     return result
 
 
+def get_exchange_list():
+    log.info("request list of exchanges")
+    url = common.baseurl_exchange_list + '?' + \
+        "api_token=" + common.apitoken + "&fmt=json"
+    log.info(url)
+    result = requests.get(url).json()
+    log.info("found %s exchanges", len(result))
+    return result
+
+
+def get_exchange_tickers(exchange):
+    log.info("request all tickers of exchange %s", exchange)
+    url = common.baseurl_exchange_tickers + exchange + '?' + \
+        "api_token=" + common.apitoken + "&fmt=json"
+    log.info(url)
+    result = requests.get(url).json()
+    log.info("found %s tickers for exchange %s", len(result), exchange)
+    return result
+
+
 def download_logo(ticker, sub_url):
     log.info("request logo for %s", ticker)
     url = common.baseurl_logo + sub_url
