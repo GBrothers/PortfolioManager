@@ -1,7 +1,7 @@
 import json
 import pymongo
 from Helper import logmngr, configmngr as config, datetimehelper as dth
-from Helper import calchelper as calch
+from Helper import calchelper as calch, internalfilewriter as ifw
 from DBConnector import cons
 
 from DBConnector.aggregations import aggregations
@@ -74,7 +74,7 @@ def update_eod_data(ticker, data):
 def update_stock_fundamentals(ticker, data):
     ticker = str(ticker).lower()
     new_data = {
-        'ticker': ticker.lower,
+        'ticker': ticker,
         'inserted': dth.now_as_string(),
         'data': data
     }
@@ -98,64 +98,46 @@ def get_exchange_list():
     return json.dumps(result["data"])
 
 
-def update_exchange_tickers(exchange, tickers):
-    tickers_common_stock = []
-    tickers_fund = []
-    tickers_mutual_fund = []
-    tickers_etf = []
-    tickers_misc = []
+def get_available_tickers(exchanges="", eqType=cons.EQUITY_COMMON_STOCK):
+    if isinstance(exchanges, str):
+        exchanges = [exchanges]
+    result = []
+    for exchange in exchanges:    
+      if len(exchange) > 0:
+          exchange = "^" + exchange + "$"
+      aggjson = aggregations.get_aggr(
+          "list_available_tickers", [exchange, eqType])
+      db_result = exchanges_collection.aggregate(aggjson)
+      for entry in db_result:
+          result.append(entry["Ticker"])
+    return result
 
+
+def update_exchange_tickers(exchange, tickers):
+    tickers_types = []
+    ex_total = 0
     for ticker in tickers:
         ticker['Type'] = ticker['Type'].upper()
-        if ticker['Type'] == cons.EQUITY_COMMON_STOCK:
-            tickers_common_stock.append(ticker)
-        elif ticker['Type'] == cons.EQUITY_ETF:
-            tickers_etf.append(ticker)
-        elif ticker['Type'] == cons.EQUITY_FUND:
-            tickers_fund.append(ticker)
-        elif ticker['Type'] == cons.EQUITY_MUTUAL_FUND:
-            tickers_mutual_fund.append(ticker)
-        else:
-            tickers_misc.append(ticker)
-    if len(tickers_misc) > 0:
-        log.error("%s equities imported to type 'Misc'. Check MongoDB!",
-                  len(tickers_misc))
-
-    new_common_stock = {
-        'exchange': exchange,
-        'type': cons.EQUITY_COMMON_STOCK,
-        'data': tickers_common_stock
-    }
-
-    new_etf = {
-        'exchange': exchange,
-        'type': cons.EQUITY_ETF,
-        'data': tickers_etf
-    }
-
-    new_fund = {
-        'exchange': exchange,
-        'type': cons.EQUITY_FUND,
-        'data': tickers_fund
-    }
-
-    new_misc = {
-        'exchange': exchange,
-        'type': cons.EQUITY_MISC,
-        'data': tickers_misc
-    }
-
-    exchanges_collection.replace_one(
-        {'exchange': exchange, 'type': cons.EQUITY_COMMON_STOCK}, new_common_stock, upsert=True)
-
-    exchanges_collection.replace_one(
-        {'exchange': exchange, 'type': cons.EQUITY_ETF}, new_etf, upsert=True)
-
-    exchanges_collection.replace_one(
-        {'exchange': exchange, 'type': cons.EQUITY_FUND}, new_fund, upsert=True)
-
-    exchanges_collection.replace_one(
-        {'exchange': exchange, 'type': cons.EQUITY_MISC}, new_misc, upsert=True)
+        hasType = False
+        for ticker_type in tickers_types:
+            if ticker_type["Type"] == ticker["Type"]:
+                ticker_type["Tickers"].append(ticker)
+                hasType = True
+                break
+        if not hasType:
+            tickers_types.append({
+                "Exchange": exchange,
+                "Type": ticker['Type'],
+                "Tickers": [ticker]
+            })
+    for ticker_type in tickers_types:
+        exchanges_collection.replace_one(
+            {'Exchange': exchange, 'Type': ticker_type["Type"]}, ticker_type, upsert=True)
+        ex_total += len(ticker_type["Tickers"])
+        log.info("Update for %s/%s: input size: %s", exchange,
+                 ticker_type["Type"], len(ticker_type["Tickers"]))
+    log.info("Updated %s Equities for Exchange %s", ex_total, exchange)
+    return ex_total
 
 
 def check_ticker_exists(ticker):
@@ -194,6 +176,14 @@ def get_fundamentals(ticker):
     return json.dumps(result["data"])
 
 
+def get_fundamentals_tickers():
+    result = []
+    aggjson = aggregations.get_aggr("list_fundamental_tickers")
+    db_result = stock_fundamentals_collection.aggregate(aggjson)
+    for entry in db_result:
+      result.append(entry["ticker"])
+    return result
+
 def get_fundamentals_logo_path(ticker):
     ticker = ticker.lower()
     try:
@@ -205,7 +195,12 @@ def get_fundamentals_logo_path(ticker):
         return result
     except StopIteration:
         log.warning("no imagepath found for ticker %s ", ticker)
-        return ""
+        return None
+
+
+def set_fundamental_logo_path(ticker, path="/img/logos/_DEFAULT.png"):
+    stock_fundamentals_collection.update_one(
+        {"ticker": ticker}, {"$set": {"data.General.LogoURL": path}})
 
 
 def find_stock(
@@ -226,7 +221,7 @@ def find_stock(
 
 def main():
     # print(get_fundamentals_logo_path("mcd.us"))
-    #print(find_eod_last_first_date("ge.us", -1))
+    # print(find_eod_last_first_date("ge.us", -1))
     print(find_stock("oe"))
 
 

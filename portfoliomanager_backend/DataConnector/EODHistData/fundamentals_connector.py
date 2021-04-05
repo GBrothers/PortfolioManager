@@ -1,6 +1,8 @@
+from logging import error
 import os
 import urllib.request
 import requests
+from requests.models import HTTPError
 from Helper import logmngr as log, configmngr as config
 from DataConnector.EODHistData import common
 
@@ -49,15 +51,32 @@ def get_exchange_tickers(exchange):
     return result
 
 
-def download_logo(ticker, sub_url):
-    log.info("request logo for %s", ticker)
+def download_logo(ticker, sub_url, force=False):
     url = common.baseurl_logo + sub_url
-    log.info(url)
     logodir = _logo_file_path + (str(sub_url).rsplit('/', 1)[0])[1:]
-    if not os.path.exists(logodir):
-        os.makedirs(logodir)
-    urllib.request.urlretrieve(url, _logo_file_path + sub_url)
-    log.info("logo for %s downloaded to %s", ticker, _logo_file_path + sub_url)
+    if os.path.isfile(_logo_file_path + sub_url) and not force:
+        log.info("logo for %s allready exists on path: %s", ticker, _logo_file_path + sub_url)
+    else:
+        log.info("request logo for %s, URL: %s and Path: %s",
+                 ticker, url, logodir)
+        if not os.path.exists(logodir):
+            os.makedirs(logodir)
+        try:
+            urllib.request.urlretrieve(url, _logo_file_path + sub_url)
+        except urllib.error.HTTPError as httpError:
+            log.error("Could not download Logo for %s %s",
+                      ticker, str(httpError))
+        filesize = os.path.getsize(_logo_file_path + sub_url)
+        if filesize < 62:
+          log.error("Filesize of %s is just %s",sub_url,filesize)
+          os.remove(_logo_file_path + sub_url)
+          raise RuntimeError(sub_url + " is corrupted")
+        if force:
+            log.info("logo for %s replaced on path %s",
+                     ticker, _logo_file_path + sub_url)
+        else:
+            log.info("logo for %s downloaded to %s",
+                     ticker, _logo_file_path + sub_url)
 
 
 def get_stock_fundamentals(ticker):

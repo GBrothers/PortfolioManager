@@ -1,0 +1,28 @@
+[
+  {
+      "$match": {
+          "Exchange": {
+            "$regex": "<1>", 
+            "$options": "i"
+        }, 
+          "Type": "<2>"
+    }
+  },
+  {
+      "$unwind": {
+          "path": "$Tickers"
+    }
+  },
+  {
+      "$project": {
+          "Ticker": {
+              "$concat": [
+                  "$Tickers.Code", ".", "$Exchange"
+        ]
+      }
+    }
+  },
+  {
+    "$unset": "_id"
+  }
+]

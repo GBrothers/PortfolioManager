@@ -1,3 +1,4 @@
+from API.api import get_available_tickers
 import sys
 import json
 import DataConnector.EODHistData.fundamentals_connector as eodhd
@@ -32,7 +33,7 @@ def update_fundamentals(tickers):
             "Updated %s entries in stock fundamentals but %s expected!", end_len, start_len)
 
 
-def update_logo(tickers):
+def update_logo(tickers, force = False):
     if isinstance(tickers, str):
         tickers = [tickers]
     start_len = len(tickers)
@@ -41,11 +42,17 @@ def update_logo(tickers):
         ticker = ticker.lower()
         try:
             url = mongo.get_fundamentals_logo_path(ticker)
+            if url == None:
+              log.error("Ticker %s not found in database!", ticker)
+              continue
             if url == "":
+                mongo.set_fundamental_logo_path(ticker)
+                log.info("No logo available for %s. Set to default.", ticker)
                 continue
-            eodhd.download_logo(ticker, url)
+            eodhd.download_logo(ticker, url, force)
         except RuntimeError as r_e:
-            log.warning("Could not receive logo for %s %s", ticker, r_e)
+            log.warning("Could not receive logo for %s %s. Set to default!", ticker, r_e)
+            mongo.set_fundamental_logo_path(ticker)
             continue
         end_len += 1
 
@@ -60,23 +67,22 @@ def update_exchange_list():
 
 
 def update_exchange_tickers():
-    for exchange in [{"Code":"US", "Name": "USA"}]: #json.loads(mongo.get_exchange_list()):
+    total = 0
+    for exchange in json.loads(mongo.get_exchange_list()):
         tickers = eodhd.get_exchange_tickers(exchange['Code'])
-        mongo.update_exchange_tickers(exchange['Code'], tickers)
+        ex_total = mongo.update_exchange_tickers(exchange['Code'], tickers)
         log.info("Updated %s tickers for exchange %s (%s)",
                  len(tickers), exchange['Code'], exchange['Name'])
+        total += ex_total
+    log.info("Updated a total of %s Equities", total)
 
 
-def main(argv):
-    # if len(argv) <= 1:
-    #     print("Two Arguments required!")
-    #     return
-
-    # update_fundamentals(fund.get_index_constituents('gspc.indx'))
-    # update_logo(fund.get_index_constituents('gspc.indx'))
+def main():
     # update_exchange_list()
-    update_exchange_tickers()
-
+    # update_exchange_tickers()
+    update_fundamentals(mongo.get_available_tickers())
+    update_logo(mongo.get_fundamentals_tickers())
+    
 
 if __name__ == "__main__":
-    main(sys.argv)
+    main()

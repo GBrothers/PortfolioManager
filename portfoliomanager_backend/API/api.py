@@ -3,7 +3,7 @@ from flask import Flask, request
 from flask_cors import CORS
 
 from Helper import logmngr
-from DBConnector import mongoconnector as mc
+from DBConnector import mongoconnector as mc, cons as mccons
 from DataConnector.EODHistData import user_connector as uc
 
 log = logmngr.get_logger()
@@ -59,6 +59,7 @@ def get_fundamentals():
         result = "No Data found for ticker " + ticker
     return result
 
+
 @ app.route('/fundamentals/logopath', methods=['GET'])
 def get_logo_path():
     if 'ticker' not in request.args:
@@ -71,10 +72,12 @@ def get_logo_path():
         result = "No Logo found for ticker " + ticker
     return result
 
+
 @ app.route('/fundamentals/exchangelist', methods=['GET'])
 def get_exchange_list():
     result = mc.get_exchange_list()
     return result
+
 
 @ app.route('/fundamentals/exchangetickers', methods=['GET'])
 def get_exchange_tickers():
@@ -84,6 +87,27 @@ def get_exchange_tickers():
         return "Error: no exchange param"
     result = mc.get_exchange_tickers(request.args['exchange'])
     return result
+
+
+@ app.route('/fundamentals/availabletickers', methods=['GET'])
+def get_available_tickers():
+    exchanges = ""
+    result = {"tickers": []}
+    eqtype = mccons.EQUITY_COMMON_STOCK
+    if "exchange" in request.args:
+        exchanges = request.args['exchange']
+    if "type" in request.args:
+        eqtype = request.args['type']
+    for exchange in exchanges.split(","):
+        result["tickers"].append(mc.get_available_tickers(exchange, eqtype))
+    return result
+
+
+@ app.route('/fundamentals/tickers', methods=['GET'])
+def get_fundamental_tickers():
+    result = {"tickers": mc.get_fundamentals_tickers()}
+    return result
+
 
 @ app.route('/search', methods=['GET'])
 def find_stock():

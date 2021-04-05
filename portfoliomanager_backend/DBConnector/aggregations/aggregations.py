@@ -6,7 +6,7 @@ log = logmngr.get_logger()
 aggs = init.aggs
 
 
-def get_aggr(aggr_name, args):
+def get_aggr(aggr_name, args = []):
     if isinstance(args, str):
         args = [args]
     elif isinstance(args, int):

@@ -1,0 +1,10 @@
+[
+  {
+    "$project": {
+      "ticker": "$ticker"
+    }
+  },
+  {
+    "$unset": "_id"
+  }
+]
