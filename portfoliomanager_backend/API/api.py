@@ -1,4 +1,5 @@
 
+import json
 from flask import Flask, request
 from flask_cors import CORS
 
@@ -76,7 +77,7 @@ def get_logo_path():
 @ app.route('/fundamentals/exchangelist', methods=['GET'])
 def get_exchange_list():
     result = mc.get_exchange_list()
-    return result
+    return {"exchanges": result}
 
 
 @ app.route('/fundamentals/exchangetickers', methods=['GET'])

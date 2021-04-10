@@ -1,5 +1,7 @@
-from logging import error
+from logging import error, warn
 import os
+import json
+import time
 import urllib.request
 import requests
 from requests.models import HTTPError
@@ -41,6 +43,16 @@ def get_exchange_list():
     return result
 
 
+def get_exchange_details(exchange):
+    log.info("request details of exchange %s", exchange)
+    url = common.baseurl_exchange_details + exchange + '?' + \
+        "api_token=" + common.apitoken + "&fmt=json"
+    log.info(url)
+    result = requests.get(url).json()
+    log.info("found details for exchange %s", exchange)
+    return result
+
+
 def get_exchange_tickers(exchange):
     log.info("request all tickers of exchange %s", exchange)
     url = common.baseurl_exchange_tickers + exchange + '?' + \
@@ -55,22 +67,32 @@ def download_logo(ticker, sub_url, force=False):
     url = common.baseurl_logo + sub_url
     logodir = _logo_file_path + (str(sub_url).rsplit('/', 1)[0])[1:]
     if os.path.isfile(_logo_file_path + sub_url) and not force:
-        log.info("logo for %s allready exists on path: %s", ticker, _logo_file_path + sub_url)
+        log.info("logo for %s allready exists on path: %s",
+                 ticker, _logo_file_path + sub_url)
     else:
         log.info("request logo for %s, URL: %s and Path: %s",
                  ticker, url, logodir)
         if not os.path.exists(logodir):
             os.makedirs(logodir)
-        try:
-            urllib.request.urlretrieve(url, _logo_file_path + sub_url)
-        except urllib.error.HTTPError as httpError:
-            log.error("Could not download Logo for %s %s",
-                      ticker, str(httpError))
+
+        for i in range(10):
+            try:
+                urllib.request.urlretrieve(url, _logo_file_path + sub_url)
+            except urllib.error.HTTPError as httpError:
+                log.error("Could not download Logo for %s %s",
+                          ticker, str(httpError))
+                break
+            except urllib.error.URLError as urlError:
+                log.error("Could not download Logo for %s %s. Retry: %s of 10",
+                          ticker, str(urlError), i)
+                time.sleep(30)
+                continue
+
         filesize = os.path.getsize(_logo_file_path + sub_url)
         if filesize < 62:
-          log.error("Filesize of %s is just %s",sub_url,filesize)
-          os.remove(_logo_file_path + sub_url)
-          raise RuntimeError(sub_url + " is corrupted")
+            log.error("Filesize of %s is just %s", sub_url, filesize)
+            os.remove(_logo_file_path + sub_url)
+            raise RuntimeError(sub_url + " is corrupted")
         if force:
             log.info("logo for %s replaced on path %s",
                      ticker, _logo_file_path + sub_url)
@@ -84,7 +106,14 @@ def get_stock_fundamentals(ticker):
     url = common.baseurl_fundamental + ticker + '?' + \
         "api_token=" + common.apitoken + "&fmt=json"
     log.info(url)
-    result = requests.get(url).json()
+    for i in range(10):
+        try:
+            log.info("%s try to receive date for %s", i+1, ticker)
+            result = requests.get(url).json()
+            break
+        except json.decoder.JSONDecodeError:
+            log.warn("Could not receive data for %s. Waiting and try again", ticker)
+            time.sleep(30)
     return result
 
 

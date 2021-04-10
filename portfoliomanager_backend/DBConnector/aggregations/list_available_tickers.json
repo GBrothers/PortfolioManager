@@ -1,28 +1,56 @@
 [
   {
-      "$match": {
-          "Exchange": {
-            "$regex": "<1>", 
-            "$options": "i"
-        }, 
-          "Type": "<2>"
+    "$match": {
+      "Exchange": {
+        "$regex": "<1>",
+        "$options": "i"
+      },
+      "Type": "<2>"
     }
   },
   {
-      "$unwind": {
-          "path": "$Tickers"
+    "$unwind": {
+      "path": "$Tickers"
     }
   },
   {
-      "$project": {
-          "Ticker": {
-              "$concat": [
-                  "$Tickers.Code", ".", "$Exchange"
-        ]
+    "$project": {
+      "Ticker": {
+        "$cond": {
+          "if": {
+            "$eq": [
+              "$USExchange",
+              true
+            ]
+          },
+          "then": {
+            "$concat": [
+              "$Tickers.Code",
+              ".",
+              "US"
+            ]
+          },
+          "else": {
+            "$concat": [
+              "$Tickers.Code",
+              ".",
+              "$Exchange"
+            ]
+          }
+        }
       }
     }
   },
   {
-    "$unset": "_id"
+    "$group": {
+      "_id": {
+        "$not": ""
+      },
+      "Tickers": {
+        "$push": {
+          "Ticker": "$Ticker"
+        }
+      }
+    }
   }
 ]

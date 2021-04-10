@@ -94,55 +94,64 @@ def update_exchange_list(data):
 
 
 def get_exchange_list():
-    result = exchanges_collection.find_one({'name': 'exchangelist'})
-    return json.dumps(result["data"])
-
-
-def get_available_tickers(exchanges="", eqType=cons.EQUITY_COMMON_STOCK):
-    if isinstance(exchanges, str):
-        exchanges = [exchanges]
-    result = []
-    for exchange in exchanges:    
-      if len(exchange) > 0:
-          exchange = "^" + exchange + "$"
-      aggjson = aggregations.get_aggr(
-          "list_available_tickers", [exchange, eqType])
-      db_result = exchanges_collection.aggregate(aggjson)
-      for entry in db_result:
-          result.append(entry["Ticker"])
+    result = exchanges_collection.find_one({'name': 'exchangelist'})['data']
     return result
 
 
-def update_exchange_tickers(exchange, tickers):
-    tickers_types = []
-    ex_total = 0
-    for ticker in tickers:
-        ticker['Type'] = ticker['Type'].upper()
-        hasType = False
-        for ticker_type in tickers_types:
-            if ticker_type["Type"] == ticker["Type"]:
-                ticker_type["Tickers"].append(ticker)
-                hasType = True
-                break
-        if not hasType:
-            tickers_types.append({
-                "Exchange": exchange,
-                "Type": ticker['Type'],
-                "Tickers": [ticker]
-            })
-    for ticker_type in tickers_types:
+def get_available_tickers(exchanges="", eqType=cons.EQUITY_COMMON_STOCK):
+
+    if isinstance(exchanges, str):
+        exchanges = [exchanges]
+    result = []
+    log.info("Request Exchanges: %s  eqTypes: %s", str(exchanges), eqType)
+    for exchange in exchanges:
+        reg_exchange = exchange
+        if len(exchange) > 0:
+            reg_exchange = "^" + exchange + "$"
+        aggjson = aggregations.get_aggr(
+            "list_available_tickers", [reg_exchange, eqType])
+        db_result = exchanges_collection.aggregate(aggjson).next()["Tickers"]
+        for entry in db_result:
+            ticker = entry["Ticker"]
+            result.append(ticker)
+        log.info("Found %s tickers for Exchanges: %s  eqTypes: %s",
+                 len(result), str(exchanges), eqType)
+    return result
+
+
+def update_exchange_tickers(exchange_tickertypes):
+    total_size = 0
+    for exchange_tickertype in exchange_tickertypes:
+        exchange = exchange_tickertype["Exchange"]
+        type = exchange_tickertype["Type"]
         exchanges_collection.replace_one(
-            {'Exchange': exchange, 'Type': ticker_type["Type"]}, ticker_type, upsert=True)
-        ex_total += len(ticker_type["Tickers"])
+            {'Exchange': exchange, 'Type': type}, exchange_tickertype, upsert=True)
         log.info("Update for %s/%s: input size: %s", exchange,
-                 ticker_type["Type"], len(ticker_type["Tickers"]))
-    log.info("Updated %s Equities for Exchange %s", ex_total, exchange)
-    return ex_total
+                 type, len(exchange_tickertype["Tickers"]))
+        total_size += len(exchange_tickertype["Tickers"])
+
+    log.info("Updated %s Equities for Exchange %s",
+             total_size, exchange)
+    return total_size
 
 
-def check_ticker_exists(ticker):
+def is_exchange_us(code):
+    log.info("check if exchangecode %s is us", code)
+    exchange = exchanges_collection.find_one({
+        "USExchange": "true",
+        "Exchange": code
+    })
+    return False if exchange == None else True
+
+def check_eod_ticker_exists(ticker):
     ticker = str(ticker).lower()
     return eod_collection.count_documents(
+        {"ticker": ticker}, limit=1) != 0
+
+
+def check_fundamentals_ticker_exists(ticker):
+    ticker = str(ticker).lower()
+    return stock_fundamentals_collection.count_documents(
         {"ticker": ticker}, limit=1) != 0
 
 
@@ -181,8 +190,9 @@ def get_fundamentals_tickers():
     aggjson = aggregations.get_aggr("list_fundamental_tickers")
     db_result = stock_fundamentals_collection.aggregate(aggjson)
     for entry in db_result:
-      result.append(entry["ticker"])
+        result.append(entry["ticker"])
     return result
+
 
 def get_fundamentals_logo_path(ticker):
     ticker = ticker.lower()

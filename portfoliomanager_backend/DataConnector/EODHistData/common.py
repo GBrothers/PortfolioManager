@@ -12,6 +12,8 @@ baseurl_user = config.get_config('eod historicaldata', 'sub-url-user', True)
 baseurl_logo = config.get_config('eod historicaldata', 'logo-url')
 baseurl_exchange_list = config.get_config('eod historicaldata', 'sub-url-exchangelist', True)
 baseurl_exchange_tickers = config.get_config('eod historicaldata','sub-url-exchangesymbols', True)
+baseurl_exchange_details = config.get_config('eod historicaldata','sub-url-exchangedetail', True)
+
 
 def check_response_status(response):
     if response.status_code != 200:
